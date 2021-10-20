@@ -38,9 +38,20 @@
               plain
               round
               native-type="button"
+              :loading="loading"
+              :disabled="showCountDown"
               @click="onGettingCode"
             >
-              获取验证码
+              <span
+                v-if="!showCountDown"
+              >获取验证码</span>
+              <van-count-down
+                v-else
+                ref="countDown"
+                :time="60*1000"
+                format="ss s"
+                @finish="toggleCodeButton"
+              />
             </van-button>
           </template>
         </van-field>
@@ -70,6 +81,8 @@ export default {
   props: {},
   data () {
     return {
+      showCountDown: false,
+      loading: false,
       user: {
         mobile: '',
         code: ''
@@ -102,7 +115,7 @@ export default {
       })
       try {
         const { data } = await login(this.user)
-        console.log(data)
+        this.$store.commit('setUser', data.data)
         this.$toast.success('登录成功')
       } catch (error) {
         this.$toast.fail('登录失败')
@@ -117,19 +130,25 @@ export default {
         })
       }
     },
+    toggleCodeButton () {
+      this.showCountDown = !this.showCountDown
+      if (!this.showCountDown) {
+        this.$refs.countDown.reset()
+      }
+    },
     async onGettingCode () {
       try {
         await this.$refs.userForm.validate('mobile')
-
+        this.loading = true
         const res = await sendCode(this.user.mobile)
         if (res.status === 200) {
           this.$toast({
             message: '验证码已发送，请注意查收',
             position: 'top'
           })
+          this.toggleCodeButton()
         }
       } catch (err) {
-        console.dir(err)
         let message = ''
         if (err && err.response && err.response.status === 429) {
           // 发送短信失败的错误提示
@@ -148,6 +167,7 @@ export default {
           position: 'top'
         })
       }
+      this.loading = false
     }
   }
 }
