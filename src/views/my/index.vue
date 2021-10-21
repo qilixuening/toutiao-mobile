@@ -1,6 +1,9 @@
 <template>
   <div class="my-container">
-    <van-cell-group class="my-banner">
+    <van-cell-group
+      v-if="user"
+      class="my-banner"
+    >
     <van-cell
       class="base-info"
       :border="false"
@@ -71,6 +74,23 @@
       </van-grid>
     </van-cell>
     </van-cell-group>
+    <van-cell
+      v-else
+      class="logout-banner"
+      :border="false"
+      center
+    >
+      <div
+        class="login-box"
+        @click="$router.push('/login')"
+      >
+        <van-icon
+          name="graphic"
+          class="login-avatar"
+        />
+      </div>
+      <div class="info">登录/注册</div>
+    </van-cell>
     <van-cell-group>
     <van-cell class="data-info">
       <van-grid
@@ -97,21 +117,28 @@
       </van-grid>
     </van-cell>
     </van-cell-group>
-    <van-cell-group :border="false" class="utilities">
-      <van-cell title="消息通知" is-link to="" />
+    <van-cell-group
+      :border="false"
+      class="utilities"
+    >
+      <van-cell v-if="user" title="消息通知" is-link to="" />
       <van-cell title="小智同学" is-link to="" />
     </van-cell-group>
     <van-cell
+      v-if="user"
       class="logout"
       title="注销登录"
       to=""
       clickable
       :border="false"
+      @click="onLogout"
     />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'MyIndex',
   components: {},
@@ -119,11 +146,23 @@ export default {
   data () {
     return {}
   },
-  computed: {},
+  computed: {
+    ...mapState(['user'])
+  },
   watch: {},
   created () {},
   mounted () {},
-  methods: {}
+  methods: {
+    onLogout () {
+      this.$dialog.confirm({
+        title: '确认退出',
+        message: '退出后需要重新登录'
+      }).then(() => {
+        this.$store.commit('removeUser')
+      }).catch(() => {
+      })
+    }
+  }
 }
 </script>
 
@@ -135,6 +174,30 @@ export default {
     /deep/ .van-grid-item__content {
       background-color: inherit;
     }
+  }
+}
+.logout-banner {
+  background-color: rgb(243, 243, 243);
+  height: 180px;
+  .login-box {
+    width: 66px;
+    height: 66px;
+    background-color: #fff;
+    border-radius: 50%;
+    margin: 0 auto;
+    .login-avatar {
+      display: block;
+      text-align: center;
+      line-height: 66px;
+      font-size: 32px;
+      color: rgb(49, 145, 255);
+    }
+  }
+  .info {
+    color: rgb(49, 145, 255);
+    text-align: center;
+    font-size: 14px;
+    padding-top: 4px;
   }
 }
 .base-info {
