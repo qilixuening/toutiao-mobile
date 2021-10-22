@@ -84,8 +84,8 @@ export default {
       showCountDown: false,
       loading: false,
       user: {
-        mobile: '',
-        code: ''
+        mobile: '13911111111',
+        code: '246810'
       },
       userLoginRules: {
         mobile: [

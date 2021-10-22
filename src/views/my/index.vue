@@ -14,12 +14,12 @@
         <van-image
           class="avatar"
           fit="cover"
-          src="https://img01.yzcdn.cn/vant/cat.jpeg"
+          :src="admin.photo"
           round
         />
       </template>
       <template #title>
-        <span class="nickname">用户名</span>
+        <span class="nickname">{{ admin.name }}</span>
       </template>
       <template #right-icon>
         <van-button
@@ -41,7 +41,7 @@
       >
         <van-grid-item class="data-item">
           <template #icon>
-            <span class="data-num">12</span>
+            <span class="data-num">{{ admin.art_count }}</span>
           </template>
           <template #text>
             <span class="data-text">头条</span>
@@ -49,7 +49,7 @@
         </van-grid-item>
         <van-grid-item class="data-item">
           <template #icon>
-            <span class="data-num">12</span>
+            <span class="data-num">{{ admin.follow_count }}</span>
           </template>
           <template #text>
             <span class="data-text">关注</span>
@@ -57,7 +57,7 @@
         </van-grid-item>
                 <van-grid-item class="data-item">
           <template #icon>
-            <span class="data-num">12</span>
+            <span class="data-num">{{ admin.fans_count }}</span>
           </template>
           <template #text>
             <span class="data-text">粉丝</span>
@@ -65,7 +65,7 @@
         </van-grid-item>
                 <van-grid-item class="data-item">
           <template #icon>
-            <span class="data-num">12</span>
+            <span class="data-num">{{ admin.like_count }}</span>
           </template>
           <template #text>
             <span class="data-text">获赞</span>
@@ -138,19 +138,24 @@
 
 <script>
 import { mapState } from 'vuex'
+import { getUserInfo } from '@/api/user'
 
 export default {
   name: 'MyIndex',
   components: {},
   props: {},
   data () {
-    return {}
+    return {
+      admin: {}
+    }
   },
   computed: {
     ...mapState(['user'])
   },
   watch: {},
-  created () {},
+  created () {
+    this.loadUserInfo()
+  },
   mounted () {},
   methods: {
     onLogout () {
@@ -161,6 +166,12 @@ export default {
         this.$store.commit('removeUser')
       }).catch(() => {
       })
+    },
+    async loadUserInfo () {
+      if (this.user) {
+        const { data } = await getUserInfo()
+        this.admin = data.data
+      }
     }
   }
 }
