@@ -26,7 +26,6 @@
       :line-width="activeLineWidth"
       sticky
       ref="channelTabs"
-      @click="show"
     >
       <van-tab
         v-for="channel in userChannels"
@@ -34,7 +33,10 @@
         :title="channel.name"
         :name="channel.id"
       >
-        {{ channel.id + channel.name }}
+        <article-list
+          :info="channel"
+        >
+        </article-list>
       </van-tab>
     </van-tabs>
   </div>
@@ -42,26 +44,27 @@
 
 <script>
 import { getUserChannels } from '@/api/user'
+import ArticleList from './components/articleList.vue'
 
 export default {
   name: 'HomeIndex',
-  components: {},
+  components: {
+    ArticleList
+  },
   props: {},
   data () {
     return {
       userChannels: [],
-      activeChannel: '0'
+      activeChannel: '0',
+      activeLineWidth: 52
     }
   },
-  computed: {
-    activeLineWidth () {
-      // const index = this.$refs.channelTabs.currentIndex
-      // const tabs = document.getElementsByClassName('van-tab')
-      // console.log(tabs[index].clientWidth)
-      return 40
+  computed: {},
+  watch: {
+    activeChannel (oldCh, newCh) {
+      this.setActiveLineWidth()
     }
   },
-  watch: {},
   created () {
     this.loadUserChannels()
   },
@@ -71,10 +74,10 @@ export default {
       const { data } = await getUserChannels()
       this.userChannels = data.data.channels
     },
-    show () {
-      const index = this.$refs.channelTabs.currentIndex
-      const tabs = document.getElementsByClassName('van-tab')
-      console.log(tabs[index].clientWidth)
+    setActiveLineWidth () {
+      const tabs = this.$refs.channelTabs
+      const tab = tabs.$refs.titles[tabs.currentIndex]
+      this.activeLineWidth = tab.$el.offsetWidth
     }
   }
 }
