@@ -45,12 +45,12 @@ const tmpData = Array.from(
     content: '一段描述文字',
     cover: {
       type: (i % 3) === 2 ? 3 : (i % 3),
-      images: [[], ['https://img01.yzcdn.cn/vant/cat.jpeg'], ['https://img01.yzcdn.cn/vant/cat.jpeg', 'https://img01.yzcdn.cn/vant/cat.jpeg', '']][i % 3]
+      images: [[], ['https://img01.yzcdn.cn/vant/cat.jpeg'], ['https://img01.yzcdn.cn/vant/cat.jpeg', '', 'https://img01.yzcdn.cn/vant/cat.jpeg']][i % 3]
     },
     is_top: i < 3,
     comment_count: i * 3 + 10,
     like_count: i * 2,
-    pub_date: Date.now()
+    pub_date: Date.now() - 1e6 * i
   })
 )
 

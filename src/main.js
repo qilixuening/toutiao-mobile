@@ -10,6 +10,8 @@ import 'amfe-flexible'
 
 import './styles/index.less'
 
+import './utils/dayjs' // 相对时间过滤器
+
 Vue.use(Vant)
 
 Vue.config.productionTip = false

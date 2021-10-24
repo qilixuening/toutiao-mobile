@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container">
+  <div class="home-container" ref="cc">
     <van-nav-bar
       class="app-nav-bar"
     >
@@ -38,25 +38,52 @@
         >
         </article-list>
       </van-tab>
+      <template #nav-right>
+        <div
+          class="popup-container"
+          @click="isPopuping = true"
+        >
+          <van-icon name="wap-nav" />
+        </div>
+      </template>
     </van-tabs>
+
+    <van-popup
+      v-model="isPopuping"
+      position="bottom"
+      get-container="body"
+      close-icon-position="top-left"
+      closeable
+      round
+      :style="{ height: '100%' }"
+    >
+      <channel-edit
+        :channels-on="userChannels"
+        :channel-this="activeChannel"
+      >
+      </channel-edit>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/articleList.vue'
+import ChannelEdit from './components/channelEdit.vue'
 
 export default {
   name: 'HomeIndex',
   components: {
-    ArticleList
+    ArticleList,
+    ChannelEdit
   },
   props: {},
   data () {
     return {
       userChannels: [],
       activeChannel: '0',
-      activeLineWidth: 52
+      activeLineWidth: 52,
+      isPopuping: true
     }
   },
   computed: {},
@@ -98,6 +125,23 @@ export default {
   /deep/ .van-icon {
     color: inherit;
     font-size: 16px;
+  }
+}
+/deep/ .van-tabs__wrap {
+  height: 44px;
+  .van-tabs__nav {
+    padding-right: 0;
+  }
+}
+.popup-container {
+  position: sticky;
+  right: 0;
+  padding-right: 8px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: -4px 0px 4px #fff;
+  .van-icon {
+    text-align: right;
+    line-height: 44px;
   }
 }
 </style>
