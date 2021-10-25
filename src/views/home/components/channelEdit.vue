@@ -28,7 +28,7 @@
           }"
           v-for="(channel, index) in channelsOn"
           :key="channel.id"
-          @click="operateChannel(index)"
+          @click="operateChannel(index, channel.id)"
         >
           <van-icon
             v-if="channel.id !== 0"
@@ -64,7 +64,13 @@
 </template>
 
 <script>
-import { getAllChannels } from '@/api/channels'
+import {
+  getAllChannels,
+  appendUserChannels,
+  removeUserChannel
+} from '@/api/channels'
+import { setItem } from '@/utils/storage'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ChannelEdit',
@@ -86,6 +92,9 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'user'
+    ]),
     channelsOff () {
       const idOnList = this.channelsOn.map(ch => ch.id)
       return this.channelsAll.filter(ch => idOnList.indexOf(ch.id) === -1)
@@ -101,22 +110,37 @@ export default {
       const { data: { data } } = await getAllChannels()
       this.channelsAll = data.channels
     },
-    appendChannel (channel) {
-      this.channelsOn.push(channel)
-    },
-    operateChannel (i) {
-      if (this.channelStatus === '编辑模式') {
-        this.removeChannel(i)
+    async appendChannel (channel) {
+      this.$emit('append-channel', channel)
+      if (this.user) {
+        await appendUserChannels({
+          channels: [{
+            id: channel.id,
+            seq: this.channelsOn.length
+          }]
+        })
       } else {
-        this.setActiveChannel(this.channelsOn[i].id)
+        setItem('local-channels', this.channelsOn)
+      }
+    },
+    operateChannel (i, id) {
+      if (this.channelStatus === '编辑模式') {
+        this.removeChannel(i, id)
+      } else {
+        this.setActiveChannel(id)
       }
     },
     setActiveChannel (id) {
       this.$emit('set-active-channel', id)
     },
-    removeChannel (i) {
-      if (this.channelsOn[i].id) {
+    async removeChannel (i, id) {
+      if (id) {
         this.$emit('remove-channel', i)
+        if (this.user) {
+          await removeUserChannel(id)
+        } else {
+          setItem('local-channels', this.channelsOn)
+        }
       }
     }
   }
@@ -144,8 +168,6 @@ export default {
   font-size: 18px;
 }
 .channel-grid {
-  overflow: auto;
-  max-height: 200px;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;

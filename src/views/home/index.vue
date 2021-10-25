@@ -12,6 +12,7 @@
           icon="search"
           type="info"
           size="mini"
+          to="/search"
           round
           plain
         >搜索</van-button>
@@ -63,6 +64,7 @@
         :channel-this="activeChannel"
         @set-active-channel="onActivateChannel"
         @remove-channel="onRemoveChannel"
+        @append-channel="onAppendChannel"
       >
       </channel-edit>
     </van-popup>
@@ -71,6 +73,8 @@
 
 <script>
 import { getUserChannels } from '@/api/user'
+import { mapState } from 'vuex'
+import { getItem, setItem } from '@/utils/storage'
 import ArticleList from './components/articleList.vue'
 import ChannelEdit from './components/channelEdit.vue'
 
@@ -90,6 +94,9 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'user'
+    ]),
     lineWidth () {
       if (!this.domReady) {
         return 52
@@ -110,15 +117,20 @@ export default {
   mounted () {},
   methods: {
     async loadUserChannels () {
-      const { data } = await getUserChannels()
-      this.userChannels = data.data.channels
+      let channels
+      if (this.user) {
+        const { data: { data } } = await getUserChannels()
+        channels = data.channels
+      } else {
+        channels = getItem('local-channels')
+        if (!channels) {
+          const { data: { data } } = await getUserChannels()
+          channels = data.channels
+          setItem('local-channels', channels)
+        }
+      }
+      this.userChannels = channels
     },
-    // setActiveLineWidth () {
-    //   const tabs = this.$refs.channelTabs
-    //   const tab = tabs.$refs.titles[tabs.currentIndex]
-    //   this.activeLineWidth = tab.$el.offsetWidth
-    //   console.log('calc', this.activeLineWidth)
-    // },
     onActivateChannel (id) {
       this.activeChannel = id
       this.isPopuping = false
@@ -128,6 +140,9 @@ export default {
         this.activeChannel = 0
       }
       this.userChannels.splice(i, 1)
+    },
+    onAppendChannel (channel) {
+      this.userChannels.push(channel)
     }
   }
 }
