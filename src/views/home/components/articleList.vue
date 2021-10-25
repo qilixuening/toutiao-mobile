@@ -36,23 +36,23 @@
 import { getChannelArticles } from '@/api/articles'
 import ArticleItem from '@/components/articleItem.vue'
 
-const tmpData = Array.from(
-  { length: 10 },
-  (_, i) => ({
-    art_id: 10 * i,
-    aut_name: 'xxxx某',
-    title: `标题${i}1描述2描述3描述4描述5描述6延长线5描述6延5描述6延5描述6延5描述6延`,
-    content: '一段描述文字',
-    cover: {
-      type: (i % 3) === 2 ? 3 : (i % 3),
-      images: [[], ['https://img01.yzcdn.cn/vant/cat.jpeg'], ['https://img01.yzcdn.cn/vant/cat.jpeg', '', 'https://img01.yzcdn.cn/vant/cat.jpeg']][i % 3]
-    },
-    is_top: i < 3,
-    comment_count: i * 3 + 10,
-    like_count: i * 2,
-    pub_date: Date.now() - 1e6 * i
-  })
-)
+// const tmpData = Array.from(
+//   { length: 10 },
+//   (_, i) => ({
+//     art_id: 10 * i,
+//     aut_name: 'xxxx某',
+//     title: `标题${i}1描述2描述3描述4描述5描述6延长线5描述6延5描述6延5描述6延5描述6延`,
+//     content: '一段描述文字',
+//     cover: {
+//       type: (i % 3) === 2 ? 3 : (i % 3),
+//       images: [[], ['https://img01.yzcdn.cn/vant/cat.jpeg'], ['https://img01.yzcdn.cn/vant/cat.jpeg', '', 'https://img01.yzcdn.cn/vant/cat.jpeg']][i % 3]
+//     },
+//     is_top: i < 3,
+//     comment_count: i * 3 + 10,
+//     like_count: i * 2,
+//     pub_date: Date.now() - 1e6 * i
+//   })
+// )
 
 export default {
   name: 'ArticleList',
@@ -67,7 +67,7 @@ export default {
   },
   data () {
     return {
-      articles: tmpData,
+      articles: [],
       loading: false,
       itemLoading: true,
       finished: false,
@@ -91,8 +91,7 @@ export default {
       // 异步更新数据
       const { data: { data } } = await getChannelArticles({
         channel_id: this.info.id,
-        timestamp: this.timestamp,
-        with_top: 1 // 是否包含置顶项
+        timestamp: this.timestamp
       })
 
       this.itemLoading = false // 骨架屏首次加载后消失
@@ -105,11 +104,11 @@ export default {
       this.timestamp = data.pre_timestamp
     },
     async onRefreshingArticles () {
+      console.log('refresh')
       this.postTimestamp = Date.now()
       const { data: { data } } = await getChannelArticles({
         channel_id: this.info.id,
-        timestamp: this.postTimestamp,
-        with_top: 1 // 是否包含置顶项
+        timestamp: this.postTimestamp
       })
 
       this.isRefreshing = false
@@ -129,7 +128,7 @@ export default {
         this.timestamp = data.pre_timestamp
         this.finished = false
         this.$toast({
-          message: '大量新闻已出现，快来一饱眼福',
+          message: '大量新闻已出现，已显示最新10条',
           position: 'top'
         })
       }

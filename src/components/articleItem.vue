@@ -10,8 +10,6 @@
         <div class="item-title van-multi-ellipsis--l2">
           {{ article.title }}
         </div>
-      </template>
-      <template #label>
         <div
           v-if="article.cover.type===3"
           class="img-grid"
@@ -20,10 +18,13 @@
             v-for="(img, i) in article.cover.images"
             class="three-img"
             cover
+            lazy-load
             :src="img"
             :key="i"
           />
         </div>
+      </template>
+      <template #label>
         <div class="description">
           <span class="tag" v-if="article.is_top">
             <van-tag plain type="danger">置顶</van-tag>
@@ -34,10 +35,10 @@
           </span>
           <span class="comments">
             <van-icon name="chat-o" />
-            {{ article.comment_count }}
+            {{ article.comm_count }}
           </span>
           <span class="time">
-            {{ article.pub_date | relativeTime }}
+            {{ article.pubdate | relativeTime }}
           </span>
         </div>
       </template>
@@ -48,6 +49,7 @@
         <van-image
           class="one-img"
           cover
+          lazy-load
           :src="article.cover.images[0]"
         />
       </template>
@@ -82,9 +84,45 @@ export default {
   // border-top: 2px solid rgb(240, 240, 240);
   margin: 1px 0;
 }
-.item-title {
-  font-size: 16px;
-  color: #3a3a3a;
+.van-cell__title {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  .item-title {
+    font-size: 16px;
+    color: #3a3a3a;
+  }
+  .img-grid {
+    margin: 15px -2px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    .three-img {
+      margin: 0 2px;
+      height: 73px;
+      width: 100%;
+      &:first-child > :only-child {
+        border-radius: 6px 0 0 6px;
+      }
+      &:last-child > :only-child {
+        border-radius: 0 6px 6px 0;
+      }
+    }
+  }
+  .description {
+    color: #b4b4b4;
+    font-size: 11px;
+    span {
+      margin-right: 12px;
+    }
+    span:last-child {
+      margin-right: 0;
+    }
+    .van-tag {
+      font-size: 11px;
+    }
+  }
 }
 .one-img {
   flex: unset;
@@ -93,37 +131,6 @@ export default {
   height: 73px;
   :only-child {
     border-radius: 6px;
-  }
-}
-.img-grid {
-  margin: 15px -2px;
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: center;
-  .three-img {
-    margin: 0 2px;
-    height: 73px;
-    width: 100%;
-    &:first-child > :only-child {
-      border-radius: 6px 0 0 6px;
-    }
-    &:last-child > :only-child {
-      border-radius: 0 6px 6px 0;
-    }
-  }
-}
-.description {
-  color: #b4b4b4;
-  font-size: 11px;
-  span {
-    margin-right: 12px;
-  }
-  span:last-child {
-    margin-right: 0;
-  }
-  .van-tag {
-    font-size: 11px;
   }
 }
 </style>

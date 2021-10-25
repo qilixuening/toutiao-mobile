@@ -3,15 +3,17 @@
     <van-cell center :border="false">
       <template #title>
         <span class="channel-title">我的频道</span>
+        <span class="channel-title-info">点击添加更多频道</span>
       </template>
-      <template #default>
-        <van-button
-          class="edit-button"
-          type='danger'
-          size="mini"
-          plain
-          round
-        >编辑</van-button>
+
+      <template #right-icon>
+        <span class="channel-switch-info">{{ channelStatus }}</span>
+        <van-switch
+          class="channel-switch"
+          v-model="channelStatus"
+          active-value="编辑模式"
+          inactive-value="选择模式"
+        />
       </template>
     </van-cell>
     <van-cell :border="false">
@@ -21,20 +23,27 @@
         <div
           class="channel-item on"
           :class="{
-            default: channel.id === '0',
+            default: channel.id === 0,
             active: channel.id === channelThis,
           }"
-          v-for="channel in channelsOn"
+          v-for="(channel, index) in channelsOn"
           :key="channel.id"
+          @click="operateChannel(index)"
         >
-          {{ channel.name }}
+          <van-icon
+            v-if="channel.id !== 0"
+            v-show="channelStatus === '编辑模式'"
+            class="channel-remove"
+            name="cross"
+          />
+          <div class="van-ellipsis">{{ channel.name }}</div>
         </div>
       </div>
     </van-cell>
 
     <van-cell center :border="false">
       <template #title>
-        <span class="channel-title">我的频道</span>
+        <span class="channel-title">可选频道</span>
       </template>
     </van-cell>
     <van-cell :border="false">
@@ -43,10 +52,11 @@
       >
         <div
           class="channel-item off"
-          v-for="i in 54"
-          :key="i*2+1"
+          v-for="channel in channelsOff"
+          :key="channel.id"
+          @click="appendChannel(channel)"
         >
-          多一个{{ i*2+1 }}hahahahha
+          {{ channel.name }}
         </div>
       </div>
     </van-cell>
@@ -54,27 +64,62 @@
 </template>
 
 <script>
+import { getAllChannels } from '@/api/channels'
+
 export default {
   name: 'ChannelEdit',
   components: {},
   props: {
+    channelThis: {
+      type: Number,
+      default: 0
+    },
     channelsOn: {
       type: Array,
       required: true
-    },
-    channelThis: {
-      type: String,
-      default: '0'
     }
   },
   data () {
-    return {}
+    return {
+      channelsAll: [],
+      channelStatus: '切换模式'
+    }
   },
-  computed: {},
+  computed: {
+    channelsOff () {
+      const idOnList = this.channelsOn.map(ch => ch.id)
+      return this.channelsAll.filter(ch => idOnList.indexOf(ch.id) === -1)
+    }
+  },
   watch: {},
-  created () {},
+  created () {
+    this.loadAllChannels()
+  },
   mounted () {},
-  methods: {}
+  methods: {
+    async loadAllChannels () {
+      const { data: { data } } = await getAllChannels()
+      this.channelsAll = data.channels
+    },
+    appendChannel (channel) {
+      this.channelsOn.push(channel)
+    },
+    operateChannel (i) {
+      if (this.channelStatus === '编辑模式') {
+        this.removeChannel(i)
+      } else {
+        this.setActiveChannel(this.channelsOn[i].id)
+      }
+    },
+    setActiveChannel (id) {
+      this.$emit('set-active-channel', id)
+    },
+    removeChannel (i) {
+      if (this.channelsOn[i].id) {
+        this.$emit('remove-channel', i)
+      }
+    }
+  }
 }
 </script>
 
@@ -83,15 +128,23 @@ export default {
   margin-top: 54px;
 }
 .channel-title {
+  padding-right: 12px;
   font-size: 16px;
   color: #333333;
 }
-.edit-button {
+.channel-title-info {
+  font-size: 14px;
+  color: #b3b3b3;
+}
+.channel-switch-info {
   font-size: 14px;
   padding: 0 10px;
 }
+.channel-switch {
+  font-size: 18px;
+}
 .channel-grid {
-  overflow: scroll;
+  overflow: auto;
   max-height: 200px;
   display: flex;
   flex-wrap: wrap;
@@ -99,15 +152,23 @@ export default {
   align-items: flex-start;
   gap: 9px;
   .channel-item {
+    position: relative;
     width: 79px;
     height: 43px;
     box-sizing: border-box;
     border-radius: 4px;
     text-align: center;
     line-height: 43px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+    .channel-remove {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      padding: 1px;
+      border-radius: 0 4px;
+      color: #fff;
+      background-color: #3296fa;
+      font-size: 12px;
+    }
   }
   .on {
     border: 1px solid rgb(245, 245, 245);

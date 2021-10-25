@@ -3,7 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import Vant from 'vant'
+import Vant, { Lazyload } from 'vant'
+
 import 'vant/lib/index.css'
 
 import 'amfe-flexible'
@@ -13,6 +14,7 @@ import './styles/index.less'
 import './utils/dayjs' // 相对时间过滤器
 
 Vue.use(Vant)
+Vue.use(Lazyload)
 
 Vue.config.productionTip = false
 

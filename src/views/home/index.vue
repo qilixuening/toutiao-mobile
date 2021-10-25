@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container" ref="cc">
+  <div class="home-container">
     <van-nav-bar
       class="app-nav-bar"
     >
@@ -23,9 +23,10 @@
       color="#3296fa"
       title-active-color="#3296fa"
       title-inactive-color="gray"
-      :line-width="activeLineWidth"
+      :line-width="lineWidth"
       sticky
       ref="channelTabs"
+      @rendered="domReady=true"
     >
       <van-tab
         v-for="channel in userChannels"
@@ -60,6 +61,8 @@
       <channel-edit
         :channels-on="userChannels"
         :channel-this="activeChannel"
+        @set-active-channel="onActivateChannel"
+        @remove-channel="onRemoveChannel"
       >
       </channel-edit>
     </van-popup>
@@ -81,17 +84,26 @@ export default {
   data () {
     return {
       userChannels: [],
-      activeChannel: '0',
-      activeLineWidth: 52,
-      isPopuping: true
+      activeChannel: 0,
+      isPopuping: false,
+      domReady: false
     }
   },
-  computed: {},
-  watch: {
-    activeChannel (oldCh, newCh) {
-      this.setActiveLineWidth()
+  computed: {
+    lineWidth () {
+      if (!this.domReady) {
+        return 52
+      }
+      if (this.activeChannel || this.userChannels.length) {
+        const tabs = this.$refs.channelTabs
+        const tab = tabs.$refs.titles[tabs.currentIndex]
+        return tab.$el.offsetWidth
+      } else {
+        return 52
+      }
     }
   },
+  watch: {},
   created () {
     this.loadUserChannels()
   },
@@ -101,10 +113,21 @@ export default {
       const { data } = await getUserChannels()
       this.userChannels = data.data.channels
     },
-    setActiveLineWidth () {
-      const tabs = this.$refs.channelTabs
-      const tab = tabs.$refs.titles[tabs.currentIndex]
-      this.activeLineWidth = tab.$el.offsetWidth
+    // setActiveLineWidth () {
+    //   const tabs = this.$refs.channelTabs
+    //   const tab = tabs.$refs.titles[tabs.currentIndex]
+    //   this.activeLineWidth = tab.$el.offsetWidth
+    //   console.log('calc', this.activeLineWidth)
+    // },
+    onActivateChannel (id) {
+      this.activeChannel = id
+      this.isPopuping = false
+    },
+    onRemoveChannel (i) {
+      if (this.userChannels[i].id === this.activeChannel) {
+        this.activeChannel = 0
+      }
+      this.userChannels.splice(i, 1)
     }
   }
 }
