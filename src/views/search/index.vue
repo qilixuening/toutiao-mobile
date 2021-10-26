@@ -5,33 +5,55 @@
     >
       <van-search
         class="search-bar"
-        v-model="searchText"
+        v-model.trim="searchText"
         show-action
         placeholder="请输入搜索关键词"
         @search="onSearch"
         @cancel="onCancel"
       />
     </form>
+
+    <component :is="searchComponentName" :search-string="searchText"></component>
   </div>
 </template>
 
 <script>
+import SearchSuggestion from './components/searchSuggestion.vue'
+import SearchHistory from './components/searchHistory.vue'
+import SearchResult from './components/searchResult.vue'
+
 export default {
   name: 'SearchIndex',
-  components: {},
+  components: {
+    SearchSuggestion,
+    SearchHistory,
+    SearchResult
+  },
   props: {},
   data () {
     return {
-      searchText: ''
+      searchText: '',
+      searchComponentName: 'search-history',
+      art: [1, 2, 3]
     }
   },
   computed: {},
-  watch: {},
+  watch: {
+    searchText (newText, oldText) {
+      if (newText) {
+        this.searchComponentName = 'search-suggestion'
+      } else {
+        this.searchComponentName = 'search-history'
+      }
+    }
+  },
   created () {},
   mounted () {},
   methods: {
     onSearch (val) {
-
+      if (val) {
+        this.searchComponentName = 'search-result'
+      }
     },
     onCancel () {
       this.$router.back()
