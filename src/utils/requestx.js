@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from '@/store/'
 
 const request = axios.create({
-  baseURL: 'http://api-toutiao-web.itheima.net/',
+  baseURL: 'http://api-toutiao-web.itheima.net/app/',
 
   transformResponse: [(data) => {
     if (data) {

@@ -10,10 +10,18 @@
         placeholder="请输入搜索关键词"
         @search="onSearch"
         @cancel="onCancel"
+        @focus="onFocus"
       />
     </form>
 
-    <component :is="searchComponentName" :search-string="searchText"></component>
+    <component
+      :is="searchComponentName"
+      :search-string="searchText"
+      :local-history="localHistory"
+      @select-search="onSelectSearch"
+      @remove-history="onRemoveHistory"
+    >
+    </component>
   </div>
 </template>
 
@@ -21,6 +29,7 @@
 import SearchSuggestion from './components/searchSuggestion.vue'
 import SearchHistory from './components/searchHistory.vue'
 import SearchResult from './components/searchResult.vue'
+import { getItem, setItem, removeItem } from '@/utils/storage'
 
 export default {
   name: 'SearchIndex',
@@ -33,30 +42,68 @@ export default {
   data () {
     return {
       searchText: '',
-      searchComponentName: 'search-history',
-      art: [1, 2, 3]
+      isSearchReady: false,
+      localHistory: getItem('search-history') || []
     }
   },
-  computed: {},
+  computed: {
+    isSearchTextValid () {
+      return Boolean(this.searchText)
+    },
+    searchComponentName: {
+      get: function () {
+        if (this.isSearchTextValid) {
+          return this.isSearchReady
+            ? 'search-result'
+            : 'search-suggestion'
+        } else {
+          return 'search-history'
+        }
+      },
+      set: function (name) {
+        return name
+      }
+    }
+  },
   watch: {
-    searchText (newText, oldText) {
-      if (newText) {
-        this.searchComponentName = 'search-suggestion'
+    localHistory (val, oldVal) {
+      if (val.length) {
+        setItem('search-history', this.localHistory)
       } else {
-        this.searchComponentName = 'search-history'
+        removeItem('search-history')
       }
     }
   },
   created () {},
   mounted () {},
   methods: {
-    onSearch (val) {
-      if (val) {
-        this.searchComponentName = 'search-result'
-      }
+    onSearch () {
+      this.addToHistory()
+      this.isSearchReady = true
     },
     onCancel () {
       this.$router.back()
+    },
+    onFocus () {
+      this.isSearchReady = false
+    },
+    onSelectSearch (selectedString) {
+      this.searchText = selectedString
+      this.onSearch()
+    },
+    addToHistory () {
+      const searchIndex = this.localHistory.indexOf(this.searchText)
+      if (searchIndex >= 0) { // 之前搜索过该词
+        this.localHistory.splice(searchIndex, 1)
+      }
+      this.localHistory.unshift(this.searchText)
+    },
+    onRemoveHistory (i) {
+      if (i >= 0) { // 删除本地单个记录
+        this.localHistory.splice(i, 1)
+      } else { // 清除本地所有记录
+        this.localHistory.splice(0)
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/utils/requestx'
 
 export const getAllChannels = () => {
   return request({

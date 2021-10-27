@@ -108,7 +108,7 @@ export default {
   methods: {
     async loadAllChannels () {
       const { data: { data } } = await getAllChannels()
-      this.channelsAll = data.channels
+      this.channelsAll = data.channels.sort((a, b) => a.id - b.id)
     },
     async appendChannel (channel) {
       this.$emit('append-channel', channel)

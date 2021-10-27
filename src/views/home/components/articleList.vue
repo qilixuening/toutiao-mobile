@@ -36,24 +36,6 @@
 import { getChannelArticles } from '@/api/articles'
 import ArticleItem from '@/components/articleItem.vue'
 
-// const tmpData = Array.from(
-//   { length: 10 },
-//   (_, i) => ({
-//     art_id: 10 * i,
-//     aut_name: 'xxxx某',
-//     title: `标题${i}1描述2描述3描述4描述5描述6延长线5描述6延5描述6延5描述6延5描述6延`,
-//     content: '一段描述文字',
-//     cover: {
-//       type: (i % 3) === 2 ? 3 : (i % 3),
-//       images: [[], ['https://img01.yzcdn.cn/vant/cat.jpeg'], ['https://img01.yzcdn.cn/vant/cat.jpeg', '', 'https://img01.yzcdn.cn/vant/cat.jpeg']][i % 3]
-//     },
-//     is_top: i < 3,
-//     comment_count: i * 3 + 10,
-//     like_count: i * 2,
-//     pub_date: Date.now() - 1e6 * i
-//   })
-// )
-
 export default {
   name: 'ArticleList',
   components: {
