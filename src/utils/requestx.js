@@ -6,8 +6,9 @@ const request = axios.create({
 
   transformResponse: [(data) => {
     if (data) {
-      // const rectifiedString = data.replace(/("id":\s)(\d+)(,\s+)/ig, (_, $1, $2, $3) => `${$1}"${$2}"${$3}`)
-      return JSON.parse(data)
+      // 文章的art_id为Number,但数字位数过长，json解析为js数字会损失精度，因此转为字符串
+      const rectifiedString = data.replace(/("art_id":\s)(\d+)(,\s+)/ig, (_, $1, $2, $3) => `${$1}"${$2}"${$3}`)
+      return JSON.parse(rectifiedString)
     } else {
       return data
     }

@@ -5,6 +5,7 @@
       class="article-item"
       clickable
       :border="true"
+      :to="routeToArticle"
     >
       <template #title>
         <div class="item-title van-multi-ellipsis--l2">
@@ -70,7 +71,16 @@ export default {
   data () {
     return {}
   },
-  computed: {},
+  computed: {
+    routeToArticle () {
+      return {
+        name: 'article',
+        params: {
+          articleId: this.article.art_id
+        }
+      }
+    }
+  },
   watch: {},
   created () {},
   mounted () {},

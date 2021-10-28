@@ -12,6 +12,7 @@
         :key="article.art_id"
         clickable
         center
+        :to="routeToArticle(article.art_id)"
       >
         <template #icon>
           <div class="channel-title van-ellipsis">
@@ -77,6 +78,14 @@ export default {
 
       if (this.totalCount <= this.page * this.perPage) {
         this.finished = true
+      }
+    },
+    routeToArticle (id) {
+      return {
+        name: 'article',
+        params: {
+          articleId: id
+        }
       }
     }
   }
