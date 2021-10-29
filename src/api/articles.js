@@ -18,3 +18,37 @@ export const getArticleContent = articleId => {
     url: `v1_0/articles/${articleId}`
   })
 }
+
+export const setArticleCollect = articleId => {
+  return request({
+    method: 'POST',
+    url: 'v1_0/article/collections',
+    data: {
+      target: articleId
+    }
+  })
+}
+
+export const removeArticleCollect = articleId => {
+  return request({
+    method: 'DELETE',
+    url: `v1_0/article/collections/${articleId}`
+  })
+}
+
+export const setArticleLike = articleId => {
+  return request({
+    method: 'POST',
+    url: 'v1_0/article/likings',
+    data: {
+      target: articleId
+    }
+  })
+}
+
+export const removeArticleLike = articleId => {
+  return request({
+    method: 'DELETE',
+    url: `v1_0/article/likings/${articleId}`
+  })
+}

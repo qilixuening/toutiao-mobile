@@ -28,3 +28,20 @@ export const getUserChannels = () => {
     url: 'v1_0/user/channels'
   })
 }
+
+export const addUserFollow = authorId => {
+  return request({
+    method: 'POST',
+    url: 'v1_0/user/followings',
+    data: {
+      target: authorId
+    }
+  })
+}
+
+export const removeUserFollow = authorId => {
+  return request({
+    method: 'DELETE',
+    url: `v1_0/user/followings/${authorId}`
+  })
+}
