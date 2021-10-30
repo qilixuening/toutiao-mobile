@@ -52,3 +52,11 @@ export const removeArticleLike = articleId => {
     url: `v1_0/article/likings/${articleId}`
   })
 }
+
+export const getArticleComments = params => {
+  return request({
+    method: 'GET',
+    url: 'v1_0/comments',
+    params
+  })
+}

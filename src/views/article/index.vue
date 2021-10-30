@@ -61,6 +61,9 @@
         v-html="article.content"
       >
       </div>
+      <comments-list
+        :article-id="articleId"
+      ></comments-list>
     </div>
     <van-cell
       center
@@ -149,6 +152,7 @@ import {
 import { addUserFollow, removeUserFollow } from '@/api/user'
 import { ImagePreview } from 'vant'
 import { mapState } from 'vuex'
+import CommentsList from './components/commentsList.vue'
 
 // 加载正文css样式
 import './github-markdown.css'
@@ -156,7 +160,8 @@ import './github-markdown.css'
 export default {
   name: 'ArticleIndex',
   components: {
-    [ImagePreview.Component.name]: ImagePreview.Component
+    [ImagePreview.Component.name]: ImagePreview.Component,
+    CommentsList
   },
   props: {
     articleId: {
