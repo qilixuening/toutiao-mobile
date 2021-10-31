@@ -17,9 +17,15 @@
       <template #title>
         <div class="item-title">
           <div>{{ comment.aut_name }}</div>
-          <van-button>
+          <van-button
+            round
+            size="mini"
+            :loading="loading"
+            @click="onCommentLiking"
+          >
             <template #icon>
               <van-icon
+                :class="{ liked: comment.is_liking }"
                 :name="comment.is_liking
                   ? 'good-job'
                   : 'good-job-o'
@@ -32,14 +38,19 @@
       </template>
       <template #label>
         <div class="item-content van-multi-ellipsis--l2">
-          {{ comment.conetent }}
+          {{ comment.content }}
         </div>
         <div class="description">
           <span class="time">
-            {{ comment.pubdate | relativeTime }}
+            {{ comment.pubdate | timeFormat('M-D HH:mm') }}
           </span>
-          <van-button>
-            {{ comemnt.reply_count }}回复
+          <van-button
+            v-if="!targetStatus"
+            size="mini"
+            round
+            @click="$emit('bubble', comment)"
+          >
+            {{ comment.reply_count }} 回复
           </van-button>
         </div>
       </template>
@@ -48,6 +59,9 @@
 </template>
 
 <script>
+import { setCommentLike, removeCommentLike } from '@/api/comments'
+import { mapState } from 'vuex'
+
 export default {
   name: 'CommentItem',
   components: {},
@@ -55,16 +69,48 @@ export default {
     comment: {
       type: Object,
       required: true
+    },
+    targetStatus: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
-    return {}
+    return {
+      loading: false
+    }
   },
-  computed: {},
+  computed: {
+    ...mapState([
+      'user'
+    ])
+  },
   watch: {},
   created () {},
   mounted () {},
-  methods: {}
+  methods: {
+    async onCommentLiking () {
+      if (this.user) {
+        this.loading = true
+        if (this.comment.is_liking) {
+          const { status } = await removeCommentLike(this.comment.com_id)
+          if (status === 204) {
+            this.comment.is_liking = false
+            this.comment.like_count--
+          }
+        } else {
+          const { status } = await setCommentLike(this.comment.com_id)
+          if (status === 201) {
+            this.comment.is_liking = true
+            this.comment.like_count++
+          }
+        }
+        this.loading = false
+      } else {
+        this.$router.push('/login')
+      }
+    }
+  }
 }
 </script>
 
@@ -72,33 +118,43 @@ export default {
 .author-avatar {
   width: 35px;
   height: 35px;
-  margin-right: 8px;
+  margin-right: 13px;
 }
 .item-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-.van-cell__title {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  .item-title {
-    font-size: 16px;
-    color: #3a3a3a;
+  font-size: 14px;
+  color: #406599;
+  .van-button {
+    color: #777777;
+    border: none;
+    padding: 0 10px;
+    .van-icon {
+      font-size: 16px;
+    }
+    .liked {
+      color: gold;
+    }
   }
-  .description {
-    color: #b4b4b4;
-    font-size: 11px;
-    span {
-      margin-right: 12px;
-    }
-    span:last-child {
-      margin-right: 0;
-    }
-    .van-tag {
-      font-size: 11px;
-    }
+}
+.item-content {
+  color: #333333;
+  font-size: 16px;
+  padding: 6px 0;
+}
+.description {
+  color: #333333;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  .time {
+    margin-right: 12px;
+  }
+  .van-button {
+    color: inherit;
+    border: none;
+    padding: 0 6px;
   }
 }
 </style>

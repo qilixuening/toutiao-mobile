@@ -1,5 +1,6 @@
 <template>
   <div class="article-container">
+    <!-- 顶栏 -->
     <van-nav-bar
       title="文章详情"
       class="app-nav-bar"
@@ -11,12 +12,15 @@
         <van-icon name="ellipsis" />
       </template>
     </van-nav-bar>
+    <!-- 标题+正文+评论回复 -->
     <div class="article-page">
+      <!-- 标题 -->
       <van-cell
         :border="false"
       >
         <h2 class="article-title">{{ article.title }}</h2>
       </van-cell>
+      <!-- 作者 -->
       <van-cell
         class="author-panel"
         center
@@ -54,17 +58,23 @@
           </van-button>
         </template>
       </van-cell>
-
+      <!-- 正文 -->
       <div
         class="markdown-body"
         ref="articleContentHTML"
         v-html="article.content"
       >
       </div>
+      <!-- 评论列表 -->
       <comments-list
         :article-id="articleId"
+        :update-comments="updateComments"
+        @reset-update="resetUpdate"
+        @update-comment-count="commentsCount = $event"
+        @bubble="onOpenReply"
       ></comments-list>
     </div>
+    <!-- 底部操作栏 -->
     <van-cell
       center
       class="article-operation"
@@ -75,6 +85,7 @@
           class="comment-button"
           size="mini"
           type="default"
+          @click="showCommentForm"
         >写评论...</van-button>
       </template>
       <template #default>
@@ -85,10 +96,13 @@
           type="default"
         >
           <van-badge max="99">
-            <van-icon name="star-o" />
+            <van-icon name="chat-o" />
             <template #content>
-              <span class="icon-badge">
-                20
+              <span
+                v-if="commentsCount"
+                class="icon-badge"
+              >
+                {{ commentsCount }}
               </span>
             </template>
           </van-badge>
@@ -124,12 +138,34 @@
           type="default"
         >
           <van-icon
-            color="#777777"
+            color="green"
             name="share"
           />
         </van-button>
       </template>
     </van-cell>
+    <!-- 评论弹出层 -->
+    <van-popup
+      v-model="isCommenting"
+      position="bottom"
+    >
+      <comment-create
+        :art-id="articleId"
+        @success="onCommentcreated"
+      ></comment-create>
+    </van-popup>
+    <!-- 回复弹出层 -->
+    <van-popup
+      v-model="isReplying"
+      position="bottom"
+      closeable
+    >
+      <replys-list
+        v-if="isReplying"
+        :comment="comment"
+      ></replys-list>
+    </van-popup>
+    <!-- 图片预览层 -->
     <van-image-preview
       v-model="isPreviewImage"
       :images="previewImages"
@@ -153,6 +189,8 @@ import { addUserFollow, removeUserFollow } from '@/api/user'
 import { ImagePreview } from 'vant'
 import { mapState } from 'vuex'
 import CommentsList from './components/commentsList.vue'
+import CommentCreate from './components/commentCreate.vue'
+import ReplysList from './components/replysList.vue'
 
 // 加载正文css样式
 import './github-markdown.css'
@@ -161,7 +199,9 @@ export default {
   name: 'ArticleIndex',
   components: {
     [ImagePreview.Component.name]: ImagePreview.Component,
-    CommentsList
+    CommentsList,
+    CommentCreate,
+    ReplysList
   },
   props: {
     articleId: {
@@ -176,7 +216,11 @@ export default {
       previewImages: [],
       page: undefined,
       loading: false,
-      comments: []
+      isCommenting: false,
+      updateComments: false,
+      commentsCount: 0,
+      isReplying: false,
+      comment: {}
     }
   },
   computed: {
@@ -285,6 +329,24 @@ export default {
       } else {
         this.$router.push('/login')
       }
+    },
+    showCommentForm () {
+      if (this.user) {
+        this.isCommenting = true
+      } else {
+        this.$router.push('/login')
+      }
+    },
+    onCommentcreated (comment) {
+      this.isCommenting = false
+      this.updateComments = true
+    },
+    resetUpdate () {
+      this.updateComments = false
+    },
+    onOpenReply (comment) {
+      this.isReplying = true
+      this.comment = comment
     }
   }
 }
@@ -346,8 +408,10 @@ export default {
   height: 46px;
   .van-cell__title {
     .comment-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       width: 100%;
-      line-height: 100%;
       font-size: 16px;
       color: gray;
     }
@@ -355,10 +419,10 @@ export default {
   .van-cell__value {
     flex: unset;
     overflow: visible;
+    color: #777777;
     .operate-button {
       border: none;
       font-size: 16px;
-      // color: lightblue;
       margin-left: 16px;
       /deep/ .van-badge {
         font-size: 10px;

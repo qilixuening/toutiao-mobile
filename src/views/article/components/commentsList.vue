@@ -1,5 +1,6 @@
 <template>
   <div class="comments-list">
+    <van-cell>全部{{ isReplyStatus ? '回复' : '评论'}}({{ commentsCount }}条)</van-cell>
     <van-list
       v-model="loading"
       :finished="finished"
@@ -10,6 +11,7 @@
         v-for="comment in comments"
         :key="comment.com_id"
         :comment="comment"
+        @bubble="$emit('bubble', $event)"
       />
     </van-list>
   </div>
@@ -28,35 +30,52 @@ export default {
     articleId: {
       type: String,
       required: true
+    },
+    updateComments: {
+      type: Boolean,
+      default: false
+    },
+    isReplyStatus: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
-      comments: [],
       loading: false,
       finished: false,
-      offset: undefined
+      offset: undefined,
+      commentsCount: 0,
+      comments: []
     }
   },
   computed: {},
-  watch: {},
+  watch: {
+    updateComments (val, oldVal) {
+      if (val) {
+        this.comments = []
+        this.finished = false
+        this.$emit('reset-update')
+      }
+    }
+  },
   created () {},
   mounted () {},
   methods: {
     async onLoadingArticleComments () {
-      // 该函数用于requestx.js接口的加载更多
-      // 该接口的timestamp与页码形式类似，因此只要timestamp存在，则证明下一页内容存在
-      // 异步更新数据
       const { data: { data } } = await getArticleComments({
-        type: 'a',
+        type: this.isReplyStatus ? 'c' : 'a',
         source: this.articleId,
         offset: this.offset,
         limit: 10
       })
-
+      this.commentsCount = data.total_count
+      this.$emit('update-comment-count', this.commentsCount)
       this.loading = false // 加载状态结束
       this.comments.push(...data.results) // 写入新加载的内容
-      if (!data.pre_timestamp) { // 加载完毕
+
+      this.offset = data.last_id // 更新页码
+      if (data.end_id === data.last_id) { // 加载完毕
         this.finished = true
       }
     }
@@ -65,15 +84,4 @@ export default {
 </script>
 
 <style scoped lang="less">
-.article-list {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 90px;
-  bottom: 50px;
-  overflow: auto;
-}
-.van-skeleton__row {
-  background-color: #ebedf0;
-}
 </style>
