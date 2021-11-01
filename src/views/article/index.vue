@@ -156,13 +156,15 @@
     </van-popup>
     <!-- 回复弹出层 -->
     <van-popup
-      v-model="isReplying"
+      v-model="isReplyListShow"
       position="bottom"
       closeable
+      @close="onReplysComplete"
     >
       <replys-list
-        v-if="isReplying"
+        v-if="isReplyListShow"
         :comment="comment"
+        :article-id="articleId"
       ></replys-list>
     </van-popup>
     <!-- 图片预览层 -->
@@ -219,7 +221,7 @@ export default {
       isCommenting: false,
       updateComments: false,
       commentsCount: 0,
-      isReplying: false,
+      isReplyListShow: false,
       comment: {}
     }
   },
@@ -345,8 +347,13 @@ export default {
       this.updateComments = false
     },
     onOpenReply (comment) {
-      this.isReplying = true
+      this.isReplyListShow = true
       this.comment = comment
+    },
+    onReplysComplete () {
+      // 对评论进行回复后，需要更新文章主页上各评论的回复数量，
+      // 用props传递太繁琐，因此直接刷新评论列表
+      this.updateComments = true
     }
   }
 }

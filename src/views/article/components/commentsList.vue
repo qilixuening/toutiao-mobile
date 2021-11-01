@@ -11,6 +11,7 @@
         v-for="comment in comments"
         :key="comment.com_id"
         :comment="comment"
+        :target-status="isReplyStatus"
         @bubble="$emit('bubble', $event)"
       />
     </van-list>
@@ -55,6 +56,8 @@ export default {
       if (val) {
         this.comments = []
         this.finished = false
+        this.offset = undefined
+
         this.$emit('reset-update')
       }
     }
