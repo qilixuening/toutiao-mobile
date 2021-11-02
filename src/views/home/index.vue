@@ -120,12 +120,12 @@ export default {
       let channels
       if (this.user) {
         const { data: { data } } = await getUserChannels()
-        channels = data.channels
+        channels = data.channels.map(({ id, name }) => ({ id: +id, name }))
       } else {
         channels = getItem('local-channels')
         if (!channels) {
           const { data: { data } } = await getUserChannels()
-          channels = data.channels
+          channels = data.channels.map(({ id, name }) => ({ id: +id, name }))
           setItem('local-channels', channels)
         }
       }

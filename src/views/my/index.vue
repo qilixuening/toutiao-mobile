@@ -28,6 +28,7 @@
           class="user-edit"
           round
           plain
+          to="/profile"
         >编辑资料</van-button>
       </template>
     </van-cell>

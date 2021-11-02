@@ -45,3 +45,18 @@ export const removeUserFollow = authorId => {
     url: `v1_0/user/followings/${authorId}`
   })
 }
+
+export const getUserProfile = () => {
+  return request({
+    method: 'GET',
+    url: 'v1_0/user/profile'
+  })
+}
+
+export const setUserProfile = data => {
+  return request({
+    method: 'PATCH',
+    url: 'v1_0/user/profile',
+    data
+  })
+}
