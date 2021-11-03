@@ -9,8 +9,9 @@
     <van-cell
       center
       title="手机号"
-      value="profile.mobile"
+      :value="profile.mobile"
     />
+
     <van-cell
       center
       is-link
@@ -24,6 +25,7 @@
         :src="profile.photo"
       />
     </van-cell>
+
     <van-cell
       title="昵称"
       center
@@ -48,6 +50,7 @@
       :value="profile.birthday"
       @click="onEditing('birthday-edit')"
     />
+    <van-uploader :after-read="afterRead" />
     <van-popup v-model="isEditing" round position="bottom">
       <component
         :is="editComponent"
@@ -150,6 +153,10 @@ export default {
         this.$toast.fail('未作修改')
       }
       this.isEditing = false
+    },
+    afterRead (file) {
+      // 此时可以自行将文件上传至服务器
+      console.log(file)
     }
   }
 }

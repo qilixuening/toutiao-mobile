@@ -12,7 +12,7 @@
       v-model.trim="message"
       rows="2"
       type="textarea"
-      maxlength="20"
+      maxlength="7"
       :placeholder="newValue"
       autosize
       show-word-limit
