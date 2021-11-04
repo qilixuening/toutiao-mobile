@@ -60,3 +60,10 @@ export const setUserProfile = data => {
     data
   })
 }
+export const setUserPhoto = data => {
+  return request({
+    method: 'PATCH',
+    url: 'v1_0/user/photo',
+    data
+  })
+}

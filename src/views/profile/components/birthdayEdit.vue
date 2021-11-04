@@ -28,21 +28,14 @@ export default {
     return {
       minDate: new Date(1970, 0, 1),
       maxDate: new Date(),
-      currentDate: new Date()
+      currentDate: this.newValue ? new Date(this.newValue) : new Date()
     }
   },
   computed: {},
   watch: {},
-  created () {
-    this.onLoadDatetime()
-  },
+  created () {},
   mounted () {},
   methods: {
-    onLoadDatetime () {
-      if (this.newValue) {
-        this.currentDate = new Date(this.newValue)
-      }
-    },
     onCancel () {
       this.$emit('complete', this.newValue)
     },

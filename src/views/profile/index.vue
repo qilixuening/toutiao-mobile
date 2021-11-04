@@ -17,6 +17,7 @@
       is-link
       title="头像"
       clickable
+      @click="$refs.selectImage.chooseFile()"
     >
       <van-image
         fit="cover"
@@ -50,8 +51,19 @@
       :value="profile.birthday"
       @click="onEditing('birthday-edit')"
     />
-    <van-uploader :after-read="afterRead" />
-    <van-popup v-model="isEditing" round position="bottom">
+    <van-uploader
+      v-show="false"
+      ref="selectImage"
+      result-type="file"
+      :after-read="afterRead"
+    />
+    <van-popup
+      v-model="isEditing"
+      position="bottom"
+      :round="editComponent !== 'image-edit'"
+      :overlay="editComponent !== 'image-edit'"
+      :class="{'image-popup': editComponent === 'image-edit'}"
+    >
       <component
         :is="editComponent"
         :new-value="oldValue"
@@ -62,7 +74,8 @@
 </template>
 
 <script>
-import { getUserProfile, setUserProfile } from '@/api/user'
+import { getUserProfile, setUserProfile, setUserPhoto } from '@/api/user'
+import imageEdit from './components/imageEdit.vue'
 import textEdit from './components/textEdit.vue'
 import genderEdit from './components/genderEdit.vue'
 import birthdayEdit from './components/birthdayEdit.vue'
@@ -72,7 +85,8 @@ export default {
   components: {
     textEdit,
     genderEdit,
-    birthdayEdit
+    birthdayEdit,
+    imageEdit
   },
   props: {},
   data () {
@@ -131,14 +145,24 @@ export default {
             this.profile.birthday = newValue
             newData.birthday = newValue
             break
+          case 'image-edit':
+            this.profile.photo = window.URL.createObjectURL(newValue)
+            newData.photo = newValue
         }
         this.$toast.loading({
           message: '正在修改...',
-          forbidClick: true
+          forbidClick: true,
+          duration: 0
         })
         try {
           if (newData) {
-            await setUserProfile(newData)
+            if (newData.photo) {
+              const fd = new FormData()
+              fd.append('photo', newData.photo)
+              await setUserPhoto(fd)
+            } else {
+              await setUserProfile(newData)
+            }
             this.$toast.success('修改成功')
           }
         } catch (err) {
@@ -154,9 +178,10 @@ export default {
       }
       this.isEditing = false
     },
-    afterRead (file) {
+    afterRead ({ file }) {
       // 此时可以自行将文件上传至服务器
-      console.log(file)
+      this.oldValue = file
+      this.onEditing('image-edit')
     }
   }
 }
@@ -175,5 +200,10 @@ export default {
   height: 35px;
   width: 35px;
   overflow: visible;
+}
+.image-popup {
+  width: 100%;
+  height: 100%;
+  background-color: unset;
 }
 </style>

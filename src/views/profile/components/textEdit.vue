@@ -32,19 +32,14 @@ export default {
   },
   data () {
     return {
-      message: ''
+      message: this.newValue
     }
   },
   computed: {},
   watch: {},
-  created () {
-    this.onLoadText()
-  },
+  created () {},
   mounted () {},
   methods: {
-    onLoadText () {
-      this.message = this.newValue
-    },
     onCancel () {
       this.$emit('complete', this.newValue)
       this.message = ''
