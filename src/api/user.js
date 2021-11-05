@@ -67,3 +67,35 @@ export const setUserPhoto = data => {
     data
   })
 }
+
+export const getUserArticles = params => {
+  return request({
+    method: 'GET',
+    url: 'v1_0/user/articles',
+    params
+  })
+}
+
+export const getTargetArticles = (userId, params) => {
+  return request({
+    method: 'GET',
+    url: `v1_0/users/${userId}/articles`,
+    params
+  })
+}
+
+export const getUserFollowings = params => {
+  return request({
+    method: 'GET',
+    url: 'v1_0/user/followings',
+    params
+  })
+}
+
+export const getUserFollowers = params => {
+  return request({
+    method: 'GET',
+    url: 'v1_0/user/followers',
+    params
+  })
+}

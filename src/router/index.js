@@ -50,6 +50,21 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: () => import('@/views/profile/')
+  },
+  {
+    path: '/my/articles',
+    name: 'articles',
+    component: () => import('@/views/articles/')
+  },
+  {
+    path: '/my/followings',
+    name: 'followings',
+    component: () => import('@/views/followings/')
+  },
+  {
+    path: '/my/followers',
+    name: 'followers',
+    component: () => import('@/views/followers/')
   }
 ]
 
