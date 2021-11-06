@@ -50,7 +50,38 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: () => import('@/views/profile/')
+  },
+  {
+    path: '/my/articles',
+    name: 'articles',
+    component: () => import('@/views/articles/')
+  },
+  {
+    path: '/my/articles/:userIdOrType',
+    name: 'userArticles',
+    props: true,
+    component: () => import('@/views/articles/')
+  },
+  {
+    path: '/my/followings',
+    name: 'followings',
+    component: () => import('@/views/followings/')
+  },
+  {
+    path: '/my/followers',
+    name: 'followers',
+    component: () => import('@/views/followers/')
   }
+  // {
+  //   path: '/my/collections',
+  //   name: 'collections',
+  //   component: () => import('@/views/collections/')
+  // },
+  // {
+  //   path: '/my/history',
+  //   name: 'history',
+  //   component: () => import('@/views/history/')
+  // }
 ]
 
 const router = new VueRouter({

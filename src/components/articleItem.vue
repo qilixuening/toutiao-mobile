@@ -30,7 +30,7 @@
           <span class="tag" v-if="article.is_top">
             <van-tag plain type="danger">置顶</van-tag>
           </span>
-          <span class="author">
+          <span class="author" v-if="showAuthor">
             <van-icon name="contact" />
             {{ article.aut_name }}
           </span>
@@ -66,6 +66,10 @@ export default {
     article: {
       type: Object,
       required: true
+    },
+    showAuthor: {
+      type: Boolean,
+      default: true
     }
   },
   data () {

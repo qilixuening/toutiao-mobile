@@ -40,7 +40,7 @@
         :border="false"
         :column-num="4"
       >
-        <van-grid-item class="data-item">
+        <van-grid-item class="data-item" to="/my/articles">
           <template #icon>
             <span class="data-num">{{ admin.art_count }}</span>
           </template>
@@ -48,7 +48,7 @@
             <span class="data-text">头条</span>
           </template>
         </van-grid-item>
-        <van-grid-item class="data-item">
+        <van-grid-item class="data-item" to="/my/followings">
           <template #icon>
             <span class="data-num">{{ admin.follow_count }}</span>
           </template>
@@ -56,7 +56,7 @@
             <span class="data-text">关注</span>
           </template>
         </van-grid-item>
-                <van-grid-item class="data-item">
+        <van-grid-item class="data-item" to="/my/followers">
           <template #icon>
             <span class="data-num">{{ admin.fans_count }}</span>
           </template>
@@ -64,7 +64,7 @@
             <span class="data-text">粉丝</span>
           </template>
         </van-grid-item>
-                <van-grid-item class="data-item">
+        <van-grid-item class="data-item">
           <template #icon>
             <span class="data-num">{{ admin.like_count }}</span>
           </template>
@@ -99,7 +99,7 @@
         :column-num="2"
         clickable
       >
-        <van-grid-item class="data-item2">
+        <van-grid-item class="data-item2" :to="routeToCollections">
           <template #icon>
             <van-icon name="star-o" class="data-icon-star"/>
           </template>
@@ -107,7 +107,7 @@
             <span class="data-text">收藏</span>
           </template>
         </van-grid-item>
-        <van-grid-item class="data-item2">
+        <van-grid-item class="data-item2" :to="routeToHistory">
           <template #icon>
             <van-icon name="clock-o" class="data-icon-history"/>
           </template>
@@ -147,11 +147,25 @@ export default {
   props: {},
   data () {
     return {
-      admin: {}
+      admin: {},
+      routeToCollections: {
+        name: 'userArticles',
+        params: {
+          userIdOrType: 'collections'
+        }
+      },
+      routeToHistory: {
+        name: 'userArticles',
+        params: {
+          userIdOrType: 'history'
+        }
+      }
     }
   },
   computed: {
-    ...mapState(['user'])
+    ...mapState([
+      'user'
+    ])
   },
   watch: {},
   created () {
