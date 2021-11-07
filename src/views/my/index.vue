@@ -92,38 +92,38 @@
       </div>
       <div class="info">登录/注册</div>
     </van-cell>
-    <van-cell-group>
-    <van-cell class="data-info">
-      <van-grid
-        :border="false"
-        :column-num="2"
-        clickable
-      >
-        <van-grid-item class="data-item2" :to="routeToCollections">
-          <template #icon>
-            <van-icon name="star-o" class="data-icon-star"/>
-          </template>
-          <template #text>
-            <span class="data-text">收藏</span>
-          </template>
-        </van-grid-item>
-        <van-grid-item class="data-item2" :to="routeToHistory">
-          <template #icon>
-            <van-icon name="clock-o" class="data-icon-history"/>
-          </template>
-          <template #text>
-            <span class="data-text">历史</span>
-          </template>
-        </van-grid-item>
-      </van-grid>
-    </van-cell>
+    <van-cell-group v-if="user">
+      <van-cell class="data-info">
+        <van-grid
+          :border="false"
+          :column-num="2"
+          clickable
+        >
+          <van-grid-item class="data-item2" :to="routeToCollections">
+            <template #icon>
+              <van-icon name="star-o" class="data-icon-star"/>
+            </template>
+            <template #text>
+              <span class="data-text">收藏</span>
+            </template>
+          </van-grid-item>
+          <van-grid-item class="data-item2" :to="routeToHistory">
+            <template #icon>
+              <van-icon name="clock-o" class="data-icon-history"/>
+            </template>
+            <template #text>
+              <span class="data-text">历史</span>
+            </template>
+          </van-grid-item>
+        </van-grid>
+      </van-cell>
     </van-cell-group>
     <van-cell-group
       :border="false"
       class="utilities"
     >
       <van-cell v-if="user" title="消息通知" is-link to="" />
-      <van-cell title="小智同学" is-link to="" />
+      <van-cell v-if="user" title="小智同学" is-link to="/chat" />
     </van-cell-group>
     <van-cell
       v-if="user"
@@ -203,7 +203,7 @@ export default {
   }
 }
 .logout-banner {
-  background-color: rgb(243, 243, 243);
+  background-color: rgb(237, 250, 255);
   height: 180px;
   .login-box {
     width: 66px;

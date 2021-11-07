@@ -71,17 +71,12 @@ const routes = [
     path: '/my/followers',
     name: 'followers',
     component: () => import('@/views/followers/')
+  },
+  {
+    path: '/chat',
+    name: 'chat',
+    component: () => import('@/views/chat/')
   }
-  // {
-  //   path: '/my/collections',
-  //   name: 'collections',
-  //   component: () => import('@/views/collections/')
-  // },
-  // {
-  //   path: '/my/history',
-  //   name: 'history',
-  //   component: () => import('@/views/history/')
-  // }
 ]
 
 const router = new VueRouter({
