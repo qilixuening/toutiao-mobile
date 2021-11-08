@@ -1,6 +1,6 @@
 <template>
   <div class="layout-container">
-    <keep-alive>
+    <keep-alive :exclude="['MyIndex']">
       <router-view />
     </keep-alive>
     <van-tabbar v-model="currentTab" route>
@@ -25,7 +25,9 @@ export default {
   computed: {},
   watch: {},
   created () {},
-  mounted () {},
+  mounted () {
+    this.$store.commit('setCachePages', 'layoutIndex')
+  },
   methods: {}
 }
 </script>

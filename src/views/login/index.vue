@@ -116,8 +116,9 @@ export default {
       try {
         const { data } = await login(this.user)
         this.$store.commit('setUser', data.data)
+        this.$store.commit('removeCachePages', 'layoutIndex')
         this.$toast.success('登录成功')
-        this.$router.back()
+        this.$router.push(this.$route.query.redirect || '/')
       } catch (error) {
         this.$toast.fail('登录失败')
       }

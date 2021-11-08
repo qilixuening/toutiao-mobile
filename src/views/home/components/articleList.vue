@@ -1,5 +1,5 @@
 <template>
-  <div class="article-list">
+  <div class="article-list" ref="list">
     <van-pull-refresh
       v-model="isRefreshing"
       :success-text="refreshInfo"
@@ -8,8 +8,8 @@
     >
       <van-list
         v-model="loading"
-        :finished="finished"
         finished-text="没有更多了"
+        :finished="finished"
         @load="onLoadingArticles"
       >
         <van-skeleton
@@ -56,13 +56,29 @@ export default {
       initTimestamp: undefined,
       timestamp: Date.now(),
       isRefreshing: false,
-      refreshInfo: '未发现新的新闻'
+      refreshInfo: '未发现新的新闻',
+      throttle: undefined,
+      scrollTop: 0
     }
   },
   computed: {},
   watch: {},
   created () {},
-  mounted () {},
+  mounted () {
+    const articleList = this.$refs.list
+    articleList.onscroll = () => {
+      if (!this.throttle) {
+        this.throttle = setTimeout(() => {
+          this.scrollTop = articleList.scrollTop
+          this.throttle = undefined
+        }, 300)
+      }
+    }
+  },
+  activated () {
+    this.$refs.list.scrollTop = this.scrollTop
+    clearTimeout(this.throttle)
+  },
   methods: {
     async onLoadingArticles () {
       // 该函数用于requestx.js接口的加载更多
@@ -98,7 +114,7 @@ export default {
       this.loading = false // 加载状态结束
       if (!data.results.length) { // 该频道没有数据
         this.refreshInfo = '该频道没有新闻'
-        console.log(this.initTimestamp, data.results.length)
+        // console.log(this.initTimestamp, data.results.length)
       } else {
         const oldIndex = data.results.findIndex(function (art) {
           return art.art_id === this.art_id

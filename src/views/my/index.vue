@@ -83,7 +83,12 @@
     >
       <div
         class="login-box"
-        @click="$router.push('/login')"
+        @click="$router.replace({
+          name: 'login',
+          query: {
+            redirect: '/my'
+          }
+        })"
       >
         <van-icon
           name="graphic"
@@ -92,7 +97,7 @@
       </div>
       <div class="info">登录/注册</div>
     </van-cell>
-    <van-cell-group v-if="user">
+    <van-cell-group>
       <van-cell class="data-info">
         <van-grid
           :border="false"
@@ -123,7 +128,7 @@
       class="utilities"
     >
       <van-cell v-if="user" title="消息通知" is-link to="" />
-      <van-cell v-if="user" title="小智同学" is-link to="/chat" />
+      <van-cell title="小智同学" is-link to="/chat" />
     </van-cell-group>
     <van-cell
       v-if="user"

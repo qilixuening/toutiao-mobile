@@ -1,5 +1,11 @@
 import axios from 'axios'
 import store from '@/store/'
+import { Toast } from 'vant'
+import router from '@/router/'
+
+const refreshRequest = axios.create({
+  baseURL: 'http://api-toutiao-web.itheima.net/app/'
+})
 
 const request = axios.create({
   baseURL: 'http://api-toutiao-web.itheima.net/app/',
@@ -29,6 +35,55 @@ request.interceptors.request.use(
     return config
   },
   function (error) {
+    return Promise.reject(error)
+  }
+)
+
+function toLogin () {
+  router.replace({
+    name: 'login',
+    query: {
+      redirect: router.currentRoute.fullPath
+    }
+  })
+}
+
+async function refreshToken (user) {
+  try {
+    const { data } = await refreshRequest({
+      method: 'PUT',
+      url: 'v1_0/authorizations',
+      headers: {
+        Authorization: `Bearer ${user.refresh_token}`
+      }
+    })
+    user.token = data.data.token
+    store.commit('setUser', user)
+  } catch (error) {
+  }
+}
+
+request.interceptors.response.use(
+  function (response) {
+    return response
+  },
+  async function (error) {
+    const { status } = error.response
+    if (status === 401) {
+      const { user } = store.state
+      if (user && user.token) {
+        await refreshToken(user)
+        return request(error.config)
+      } else {
+        return toLogin()
+      }
+    } else if (status === 400) {
+      Toast.fail('请求参数错误')
+    } else if (status === 403) {
+      Toast.fail('没有权限')
+    } else if (status > 500) {
+      Toast.fail('服务器异常')
+    }
     return Promise.reject(error)
   }
 )
