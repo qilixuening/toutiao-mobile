@@ -97,11 +97,11 @@
         >
           <van-badge max="99">
             <van-icon name="chat-o" />
-            <template #content>
-              <span
-                v-if="commentsCount"
-                class="icon-badge"
-              >
+            <template
+              #content
+              v-if="commentsCount"
+            >
+              <span class="icon-badge">
                 {{ commentsCount }}
               </span>
             </template>
@@ -245,7 +245,6 @@ export default {
     async loadArticle () {
       const { data: { data } } = await getArticleContent(this.articleId)
       this.article = data
-      // console.log(data)
       this.$nextTick(this.getContentImages)
     },
     getContentImages () {
@@ -259,78 +258,62 @@ export default {
       })
     },
     async toggleUserFollow () {
-      if (this.user) {
-        this.loading = true
-        if (this.article.is_followed) {
-          const { status } = await removeUserFollow(this.article.aut_id)
-          if (status === 204) {
-            this.article.is_followed = !this.article.is_followed
-          }
-        } else {
-          const { status } = await addUserFollow(this.article.aut_id)
-          if (status === 201) {
-            this.article.is_followed = !this.article.is_followed
-          }
-        }
-        this.loading = false
+      this.loading = true
+      if (this.article.is_followed) {
+        await removeUserFollow(this.article.aut_id)
+        this.article.is_followed = !this.article.is_followed
       } else {
-        this.$router.push('/login')
+        await addUserFollow(this.article.aut_id)
+        this.article.is_followed = !this.article.is_followed
       }
+      this.loading = false
     },
     async toggleArticleCollect () {
-      if (this.user) {
-        this.$toast.loading({
-          message: '操作中...',
-          forbidClick: true
-        })
-        if (this.article.is_collected) {
-          const { status } = await removeArticleCollect(this.articleId)
-          if (status === 204) {
-            this.article.is_collected = !this.article.is_collected
-            this.$toast.success('已取消收藏')
-          } else {
-            this.$toast.fail('操作失败，请重试')
-          }
+      this.$toast.loading({
+        message: '操作中...',
+        forbidClick: true
+      })
+      if (this.article.is_collected) {
+        const { status } = await removeArticleCollect(this.articleId)
+        if (status === 204) {
+          this.article.is_collected = !this.article.is_collected
+          this.$toast.success('已取消收藏')
         } else {
-          const { status } = await setArticleCollect(this.articleId)
-          if (status === 201) {
-            this.article.is_collected = !this.article.is_collected
-            this.$toast.success('收藏成功')
-          } else {
-            this.$toast.fail('操作失败，请重试')
-          }
+          this.$toast.fail('操作失败，请重试')
         }
       } else {
-        this.$router.push('/login')
+        const { status } = await setArticleCollect(this.articleId)
+        if (status === 201) {
+          this.article.is_collected = !this.article.is_collected
+          this.$toast.success('收藏成功')
+        } else {
+          this.$toast.fail('操作失败，请重试')
+        }
       }
     },
     async toggleArticleLike () {
-      if (this.user) {
-        this.$toast.loading({
-          message: '操作中...',
-          forbidClick: true
-        })
-        if (this.article.attitude === 1) {
-          const { status } = await removeArticleLike(this.articleId)
-          if (status === 204) {
-            this.article.attitude = 0
-            this.$toast.success('已取消点赞')
-          } else {
-            this.$toast.fail('操作失败，请重试')
-          }
+      this.$toast.loading({
+        message: '操作中...',
+        forbidClick: true
+      })
+      if (this.article.attitude === 1) {
+        const { status } = await removeArticleLike(this.articleId)
+        if (status === 204) {
+          this.article.attitude = 0
+          this.$toast.success('已取消点赞')
         } else {
-          const { status } = await setArticleLike(this.articleId)
-          if (status === 201) {
-            this.article.attitude = 1
-            this.$toast.success('点赞成功')
-          } else {
-            this.$toast.fail('操作失败，请重试')
-          }
+          this.$toast.fail('操作失败，请重试')
         }
-        this.loading = false
       } else {
-        this.$router.push('/login')
+        const { status } = await setArticleLike(this.articleId)
+        if (status === 201) {
+          this.article.attitude = 1
+          this.$toast.success('点赞成功')
+        } else {
+          this.$toast.fail('操作失败，请重试')
+        }
       }
+      this.loading = false
     },
     showCommentForm () {
       if (this.user) {

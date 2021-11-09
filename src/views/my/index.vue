@@ -177,6 +177,9 @@ export default {
     this.loadUserInfo()
   },
   mounted () {},
+  activated () {
+    this.loadUserInfo()
+  },
   methods: {
     onLogout () {
       this.$dialog.confirm({

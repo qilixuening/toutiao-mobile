@@ -60,6 +60,7 @@ async function refreshToken (user) {
     user.token = data.data.token
     store.commit('setUser', user)
   } catch (error) {
+    return error.response.status
   }
 }
 
@@ -68,12 +69,15 @@ request.interceptors.response.use(
     return response
   },
   async function (error) {
-    const { status } = error.response
+    const status = error.response.status
     if (status === 401) {
       const { user } = store.state
       if (user && user.token) {
-        await refreshToken(user)
-        return request(error.config)
+        if (await refreshToken(user)) {
+          return toLogin()
+        } else {
+          return request(error.config)
+        }
       } else {
         return toLogin()
       }
